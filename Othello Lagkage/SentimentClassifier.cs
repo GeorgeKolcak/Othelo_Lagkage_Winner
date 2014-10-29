@@ -12,11 +12,20 @@ namespace Othello_Lagkage
 
         private Dictionary<byte, double> emptyFeatureSetProbabilities;
 
-        public SentimentClassifier(Dictionary<byte, Dictionary<Feature, double>> featureProbabilities)
+        public Dictionary<byte, Dictionary<Feature, double>> FeatureProbabilities
+        {
+            get
+            {
+                return featureProbabilities; //TEMP
+            }
+        }
+
+        public SentimentClassifier(Dictionary<byte, Dictionary<Feature, double>> featureProbabilities, Dictionary<byte, double> sentimentProbabilities)
         {
             this.featureProbabilities = featureProbabilities;
 
-            emptyFeatureSetProbabilities = featureProbabilities.Keys.ToDictionary(sentiment => sentiment, sentiment => featureProbabilities[sentiment].Values.Aggregate((a, b) => (a * b)));
+            emptyFeatureSetProbabilities = featureProbabilities.Keys.ToDictionary(sentiment => sentiment,
+                sentiment => (sentimentProbabilities[sentiment] * featureProbabilities[sentiment].Values.Aggregate((a, b) => (a * b))));
         }
 
         public byte Classify(IEnumerable<Feature> featureVector)
