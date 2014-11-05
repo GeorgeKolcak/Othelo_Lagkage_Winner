@@ -17,7 +17,7 @@ namespace Othello_Lagkage
             featureProbabilities = new Dictionary<byte, Dictionary<Feature, double>>();
         }
 
-        public abstract void Learn(Tuple<Feature[], byte>[] trainingData);
+        public abstract void Learn(Dictionary<byte, int> sentimentCount, Dictionary<Feature, Dictionary<byte, int>> features);
 
         public SentimentClassifier Finalise()
         {

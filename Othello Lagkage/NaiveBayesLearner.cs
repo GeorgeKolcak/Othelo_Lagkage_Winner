@@ -11,32 +11,31 @@ namespace Othello_Lagkage
         public NaiveBayesLearner()
             : base() { }
 
-        public override void Learn(Tuple<Feature[], byte>[] trainingData)
+        public override void Learn(Dictionary<byte, int> sentimentCount, Dictionary<Feature, Dictionary<byte, int>> features)
         {
-            IGrouping<byte, Tuple<Feature[], byte>>[] reviewsBySentiment = trainingData.GroupBy(tuple => tuple.Item2).ToArray();
+            int reviewCount = sentimentCount.Values.Sum();
 
-            Feature[] allFeatures = trainingData.SelectMany(tuple => tuple.Item1).Distinct().ToArray();
-
-            Console.WriteLine("Class Count: {0}", reviewsBySentiment.Length);
-            Console.WriteLine("Feature Count: {0}", allFeatures.Length);
-
-            foreach(IGrouping<byte, Tuple<Feature[], byte>> sentiment in reviewsBySentiment)
+            foreach (byte sentiment in sentimentCount.Keys)
             {
-                Console.Write("\r" + sentiment.Key + " ");
+                sentimentProbabilities.Add(sentiment, ((sentimentCount[sentiment] + 1.0) / (reviewCount + sentimentCount.Count)));
 
-                sentimentProbabilities.Add(sentiment.Key, ((sentiment.Count() + 1.0) / (trainingData.Count() + reviewsBySentiment.Length)));
+                featureProbabilities.Add(sentiment, new Dictionary<Feature, double>());
+            }
 
-                featureProbabilities.Add(sentiment.Key, new Dictionary<Feature, double>());
+            Console.WriteLine("Feature Count: {0}", features.Count);
 
-                int i = 0;
-                foreach (Feature feature in allFeatures)
+            int i = 0;
+            foreach (Feature feature in features.Keys)
+            {
+                i++;
+                Console.Write("\rFeature: {0}", i);
+
+                Dictionary<byte, int> featureSentimentCount = features[feature];
+                int featureCount = featureSentimentCount.Values.Sum();
+
+                foreach (byte sentiment in sentimentCount.Keys)
                 {
-                    i++;
-                    Console.Write(i);
-
-                    int featureCountPerSentiment = sentiment.Where(tuple => tuple.Item1.Contains(feature)).Count();
-
-                    featureProbabilities[sentiment.Key].Add(feature, ((featureCountPerSentiment + 1.0) / (sentiment.Count() + allFeatures.Length)));
+                    featureProbabilities[sentiment].Add(feature, ((featureSentimentCount[sentiment] + 1.0) / (featureCount + features.Count)));
                 }
             }
 

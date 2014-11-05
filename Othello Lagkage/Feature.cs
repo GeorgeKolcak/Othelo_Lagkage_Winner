@@ -12,7 +12,7 @@ namespace Othello_Lagkage
 
         public Feature(string id)
         {
-            ID = id;
+            ID = id.Replace(" ", "").Replace("\t", "");
         }
 
         public override string ToString()

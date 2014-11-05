@@ -8,6 +8,11 @@ namespace Othello_Lagkage
 {
     class Program
     {
+        private static readonly Dictionary<byte, int> DefaultSentimentCount = new Dictionary<byte, int>()
+        {
+            { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0 }, { 5, 0 }
+        };
+
         static void Main(string[] args)
         {
             SentimentClassifierLearner learner = new NaiveBayesLearner();
@@ -20,17 +25,39 @@ namespace Othello_Lagkage
             //learner.AddTrainingData(new Feature[] { new Feature("incredibly"), new Feature("superb"), new Feature("recommend") }, 2);
             //learner.AddTrainingData(new Feature[] { new Feature("good"), new Feature("but"), new Feature("not"), new Feature("recommend_NEG") }, 2);
 
-            learner.Learn(ReviewParser.Parse("SentimentTrainingData.txt").ToArray());
+            Dictionary<Feature, Dictionary<byte, int>> features = new Dictionary<Feature, Dictionary<byte, int>>();
+            Dictionary<byte, int> globalSentimentCount = new Dictionary<byte, int>(DefaultSentimentCount);
 
-            SentimentClassifier classifier = learner.Finalise();
-            
-            foreach (byte sentiment in classifier.FeatureProbabilities.Keys)
+            foreach (Tuple<Feature[], byte> review in ReviewParser.Parse("SentimentTrainingData.txt"))
             {
-                foreach (Feature feature in classifier.FeatureProbabilities[sentiment].Keys)
+                globalSentimentCount[review.Item2]++;
+
+                foreach (Feature feature in review.Item1)
                 {
-                    Console.WriteLine("{0}\t{1}\t{2}", sentiment, feature, classifier.FeatureProbabilities[sentiment][feature]);
+                    bool newFeature;
+                    Dictionary<byte, int> sentimentCount;
+
+                    if (newFeature = !features.TryGetValue(feature, out sentimentCount))
+                    {
+                        sentimentCount = new Dictionary<byte, int>(DefaultSentimentCount);
+                    }
+
+                    sentimentCount[review.Item2]++;
+
+                    if (newFeature)
+                    {
+                        features.Add(feature, sentimentCount);
+                    }
                 }
             }
+
+            learner.Learn(globalSentimentCount, features);
+
+            SentimentClassifier classifier = learner.Finalise();
+
+            classifier.Save(Console.ReadLine());
+
+            classifier = SentimentClassifier.Load(Console.ReadLine());
 
             Console.ReadKey();
         }
