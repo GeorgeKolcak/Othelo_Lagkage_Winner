@@ -16,6 +16,8 @@ namespace Competition
 
         static void Main(string[] args)
         {
+            int numberOfCommunities = 8;
+
             List<User> users = new List<User>();
 
             using (StreamReader sr = new StreamReader("friendships.reviews.txt"))
@@ -61,13 +63,13 @@ namespace Competition
                 user.ReviewClassification = classifier.Classify(user.Review);
             }
 
-            double[,] laplacian = new double[100, 100];
+            double[,] laplacian = new double[users.Count, users.Count];
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < users.Count; i++)
             {
                 int count = 0;
 
-                for (int j = (i + 1); j < 100; j++)
+                for (int j = (i + 1); j < users.Count; j++)
                 {
                     if (users[i].Friends.Contains(users[j].ID))
                     {
@@ -82,33 +84,33 @@ namespace Competition
 
             EigenvalueDecomposition decomposition = new EigenvalueDecomposition(laplacian);
 
-            double[][] clusteringData = new double[100][];
+            double[][] clusteringData = new double[users.Count][];
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < users.Count; i++)
             {
-                clusteringData[i] = new double[10];
+                clusteringData[i] = new double[numberOfCommunities];
 
-                for (int j = (i + 1); j < 10; j++)
+                for (int j = (i + 1); j < numberOfCommunities; j++)
                 {
                     clusteringData[i][j] = decomposition.Eigenvectors[i,j];
                 }
             }
 
-            int[] clusters = ClusteringKMeans.KMeansDemo.Cluster(clusteringData, 10);
+            int[] clusters = ClusteringKMeans.KMeansDemo.Cluster(clusteringData, numberOfCommunities);
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < users.Count; i++)
             {
                 users[i].Cluster = clusters[i];
             }
 
             bool[] willBuy = new bool[users.Count];
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < users.Count; i++)
             {
                 int weight = 0;
                 double score = 0;
 
-                for (int j = 0; j < 100; j++)
+                for (int j = 0; j < users.Count; j++)
                 {
                     if ((users[j].Review != null) && users[i].Friends.Contains(users[j].ID))
                     {
