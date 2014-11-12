@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Othello_Lagkage
 {
-    class Feature
+    public class Feature
     {
         public string ID { get; private set; }
 

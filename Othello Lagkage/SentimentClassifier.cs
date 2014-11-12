@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Othello_Lagkage
 {
-    class SentimentClassifier
+    public class SentimentClassifier
     {
         private Dictionary<byte, Dictionary<Feature, double>> featureProbabilities;
         private Dictionary<byte, double> sentimentProbabilities;
@@ -28,17 +28,48 @@ namespace Othello_Lagkage
             this.featureProbabilities = featureProbabilities;
             this.sentimentProbabilities = sentimentProbabilities;
 
-            emptyFeatureSetProbabilities = featureProbabilities.Keys.ToDictionary(sentiment => sentiment,
-                sentiment => (sentimentProbabilities[sentiment] * featureProbabilities[sentiment].Values.Aggregate((a, b) => (a * b))));
+            emptyFeatureSetProbabilities = new Dictionary<byte, double>();
+
+            foreach (byte sentiment in sentimentProbabilities.Keys)
+            {
+                double probability = (-Math.Log(sentimentProbabilities[sentiment]));
+
+                foreach (Feature feature in featureProbabilities[sentiment].Keys)
+                {
+                    probability -= Math.Log(1 - featureProbabilities[sentiment][feature]);
+                }
+
+                emptyFeatureSetProbabilities.Add(sentiment, probability);
+            }
         }
 
-        public byte Classify(IEnumerable<Feature> featureVector)
+        public byte Classify(Feature[] featureVector)
         {
-            Dictionary<byte, double> scores = emptyFeatureSetProbabilities.Keys.ToDictionary(sentiment => sentiment,
-                sentiment => (emptyFeatureSetProbabilities[sentiment] * featureVector.Select(feature => featureProbabilities[sentiment][feature] / (1 - featureProbabilities[sentiment][feature]))
-                    .Aggregate((a,b) => (a*b))));
+            if (featureVector == null)
+            {
+                return 0;
+            }
 
-            return scores.Keys.Aggregate<byte>((a, b) => ((scores[b] > scores[a]) ? b : a));
+            Dictionary<byte, double> scores = new Dictionary<byte, double>();
+
+            foreach (byte sentiment in sentimentProbabilities.Keys)
+            {
+                double score = emptyFeatureSetProbabilities[sentiment];
+
+                foreach(Feature feature in featureVector)
+                {
+                    double probability;
+
+                    if (featureProbabilities[sentiment].TryGetValue(feature, out probability))
+                    {
+                        score -= (Math.Log(probability) - Math.Log(1 - probability));
+                    }
+                }
+
+                scores.Add(sentiment, score);
+            }
+
+            return scores.Keys.Aggregate<byte>((a, b) => ((scores[b] < scores[a]) ? b : a));
         }
 
         public void Save(string fileName)

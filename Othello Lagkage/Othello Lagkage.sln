@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Othello Lagkage", "Othello Lagkage.csproj", "{AE39277B-962B-4DDC-91DA-8D1C11E5EF0B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Competition", "..\Competition\Competition.csproj", "{5CFD0160-5E4C-45DF-94A9-CF4BE38EB604}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{AE39277B-962B-4DDC-91DA-8D1C11E5EF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE39277B-962B-4DDC-91DA-8D1C11E5EF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE39277B-962B-4DDC-91DA-8D1C11E5EF0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CFD0160-5E4C-45DF-94A9-CF4BE38EB604}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CFD0160-5E4C-45DF-94A9-CF4BE38EB604}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CFD0160-5E4C-45DF-94A9-CF4BE38EB604}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CFD0160-5E4C-45DF-94A9-CF4BE38EB604}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,20 +9,7 @@ using System.Threading.Tasks;
 
 namespace Othello_Lagkage
 {
-    enum FeatureType
-    {
-        Unknown,
-        Account,
-        Emoticon,
-        Hashtag,
-        HTMLTag,
-        Punctuation,
-        Number,
-        PhoneNumber,
-        Word
-    }
-
-    class ReviewParser
+    public class ReviewParser
     {
         private const string EmoticonRegex = @"([<>]?[:;=8][\-o\*\']?[\)\]\(\[dDpP/\:\}\{@\|\\])|([\)\]\(\[dDpP/\:\}\{@\|\\][\-o\*\']?[:;=8][<>]?)";
         private const string PhoneNumberRegex = @"\+?(\d[\d-. \\/]+)?(\([\d-. \\/]+\))?[\d-. \\/]+\d";
@@ -33,7 +20,7 @@ namespace Othello_Lagkage
         private const string NumberRegex = @"[+\-]?\d+[,/.:-]?\d*[+\-]?";
         private const string PunctuationRegex = @"[;:.!?]+";
         private const string OtherRegex = @"(\S)";
-        private const string NegationRegex = @"never|no|nothing|nowhere|noone|none|not|haven't|havent|hasn't|hasnt|hadn't|hadnt|can't|cant|couldn't|couldnt|shouldn't|shouldnt|won't|wont|wouldn't|wouldnt|don't|dont|doesn't|doesnt|didn't|didnt|isn't|isnt|aren't|arent|ain't|aint";
+        private const string NegationRegex = @"never|no|nothing|nowhere|noone|none|not|haven't|havent|hasn't|hasnt|hadn't|hadnt|can't|cant|couldn't|couldnt|shouldn't|shouldnt|won't|wont|wouldn't|wouldnt|don't|dont|doesn't|doesnt|didn't|didnt|isn't|isnt|aren't|arent|ain't|aint|have yet";
 
         public static IEnumerable<Tuple<Feature[], byte>> Parse(string file)
         {

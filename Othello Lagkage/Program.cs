@@ -15,6 +15,8 @@ namespace Othello_Lagkage
 
         static void Main(string[] args)
         {
+            Random random = new Random();
+
             SentimentClassifierLearner learner = new NaiveBayesLearner();
 
             //learner.AddTrainingData(ReviewParser.Parse("SentimentTrainingData.txt"));
@@ -25,11 +27,18 @@ namespace Othello_Lagkage
             //learner.AddTrainingData(new Feature[] { new Feature("incredibly"), new Feature("superb"), new Feature("recommend") }, 2);
             //learner.AddTrainingData(new Feature[] { new Feature("good"), new Feature("but"), new Feature("not"), new Feature("recommend_NEG") }, 2);
 
+            List<Tuple<Feature[], byte>> validationData = new List<Tuple<Feature[], byte>>();
+
             Dictionary<Feature, Dictionary<byte, int>> features = new Dictionary<Feature, Dictionary<byte, int>>();
             Dictionary<byte, int> globalSentimentCount = new Dictionary<byte, int>(DefaultSentimentCount);
 
             foreach (Tuple<Feature[], byte> review in ReviewParser.Parse("SentimentTrainingData.txt"))
             {
+                if (random.Next(10) == 0)
+                {
+                    validationData.Add(review);
+                }
+
                 globalSentimentCount[review.Item2]++;
 
                 foreach (Feature feature in review.Item1)
@@ -55,9 +64,21 @@ namespace Othello_Lagkage
 
             SentimentClassifier classifier = learner.Finalise();
 
-            classifier.Save(Console.ReadLine());
+            //classifier.Save("CLSFR.txt");
 
-            classifier = SentimentClassifier.Load(Console.ReadLine());
+            int success = 0;
+            int all = 0;
+            foreach (Tuple<Feature[], byte> review in validationData)
+            {
+                all++;
+
+                if (classifier.Classify(review.Item1) == review.Item2)
+                {
+                    success++;
+                }
+            }
+
+            Console.WriteLine((double)success / all);
 
             Console.ReadKey();
         }
